@@ -13,7 +13,8 @@ $NUISANCE_IFDHC_SETUP
 $NUISANCE_JOBSUB_SETUP
 
 # Tell JOBSUB where it should automatically put PNFS jobs if no output is given on the PNFS area even though its a GRID JOB
-export NUISANCE_PNFS_RESULTS_AREA=/pnfs/minerva/persistent/users/jstowell/NUISANCEMC/minerva_tuning/jobsub-outputs/
+export NUISANCE_PNFS_RESULTS_AREA=""
+#=/pnfs/minerva/persistent/users/jstowell/NUISANCEMC/minerva_tuning/jobsub-outputs/
 
 
 
