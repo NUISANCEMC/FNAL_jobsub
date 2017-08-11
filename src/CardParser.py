@@ -49,7 +49,6 @@ def UpdatePaths(cardfile,newname=""):
 
         # else single
         else:
-            print "Single Arg"
 
             # Get full path
 

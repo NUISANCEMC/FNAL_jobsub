@@ -25,7 +25,7 @@ class NuisCompJob:
         # Setup Input Card
         self.CardPath    = os.path.abspath(args.card)
         call(["ifdh","cp",self.CardPath, self.CardPath + self.UID + ".xml"])
-        self.CardPath    = self.CardFile + self.UID + ".xml"
+        self.CardPath    = self.CardPath + self.UID + ".xml"
         self.CardFile    = self.CardPath.split("/")[-1]
         self.CardDir     = self.CardPath.replace(self.CardFile,"")
 
