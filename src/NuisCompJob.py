@@ -134,6 +134,8 @@ class NuisCompJob:
         # Setup NUISANCE
         script.write("# Setup NUISANCE\n")
         script.write(self.NUISANCESetupScript + "\n")
+        script.write("source $GENIE/setup.sh \n")
+        script.write("source $NUWRO/setup.sh \n")
         script.write(self.IFDHCSetupScript + "\n")
 
 

@@ -24,7 +24,10 @@ class NuisSystJob:
 
         # Setup Input Card
         self.CardPath    = os.path.abspath(args.card)
-
+        call(["ifdh","cp",self.CardPath, self.CardPath + self.UID + ".xml"])
+        self.CardPath    = self.CardPath + self.UID + ".xml"
+        self.CardFile    = self.CardPath.split("/")[-1]
+        self.CardDir     = self.CardPath.replace(self.CardFile,"")
 
         # Also append input files from card if on grid
         if self.Site == "GRID":
@@ -130,21 +133,31 @@ class NuisSystJob:
 
         # Setup NUISANCE
         script.write("# Setup NUISANCE\n")
-        script.write("source " + self.NUISANCESetupScript + "\n")
+        script.write(self.NUISANCESetupScript + "\n")
+        script.write("source $GENIE/setup.sh \n")
+        script.write("source $NUWRO/setup.sh \n")
         script.write(self.IFDHCSetupScript + "\n")
 
-        # Make out directory
-        script.write("# Make out directory\n")
-        script.write("mkdir out\n")
-        script.write("cd out\n")
 
         if self.Site == "GRID":
+            
+            # Make out directory
+            script.write("# Make out directory\n")
+            script.write("mkdir out\n")
+            script.write("cd out\n")
+
             # Copy files here
             script.write("# Copy files here\n")
             for infile in self.InputFiles:
                 if infile != infile.split("/")[-1]:
                     script.write("ifdh cp " + infile + " " + infile.split("/")[-1] + "\n")
         
+        else:
+
+            # Change to run area
+            script.write("# Change to run area \n")
+            script.write("cd " + self.CardDir + "\n")
+
         # Run Job
         script.write("# Run Job\n")
         script.write("nuissyst " + self.Arguments + "\n")
@@ -156,14 +169,18 @@ class NuisSystJob:
             for infile in self.InputFiles:
                 script.write("rm " + infile.split("/")[-1] + "\n")
 
-        # Copy output back
-        script.write("# Copy output back\n")
-        script.write("cd ../\n")
-        script.write("for file in ./out/*\n")
-        script.write("do\n")
-        script.write("  echo Copying out : $file\n")
-        script.write("  ifdh cp -D $file " + self.OutputDir + "\n")
-        script.write("done\n")
+            # Copy output back
+            script.write("# Copy output back\n")
+            script.write("cd ../\n")
+            script.write("for file in ./out/*\n")
+            script.write("do\n")
+            script.write("  echo Copying out : $file\n")
+            script.write("  ifdh cp -D $file " + self.OutputDir + "\n")
+            script.write("done\n")
+        else:
+            # CD BACK
+            script.write("# CD BACK\n")
+            script.write("cd -\n")
 
         script.close()
 
@@ -182,6 +199,6 @@ class NuisSystJob:
 
 
 # To do,
-# - move this into NuisCompJob class file
+# - move this into NuisSystJob class file
 # - Move SubmitJob And Pickle Job Functions into JobHandler.py
 # - Make a main function which parses arguments and depending on type creates different jobs.
