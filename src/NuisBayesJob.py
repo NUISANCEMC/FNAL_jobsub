@@ -255,7 +255,6 @@ class NuisBayesJob:
         # Copy the outputs
         script.write("# Copy files back to /pnfs\n")
         script.write("outdir=" + self.OutputDir + "\n")
-        script.write("cd out/ \n")
         script.write("for ofile in ./* \n")
         script.write("do\n")
         script.write("echo $ofile \n")
