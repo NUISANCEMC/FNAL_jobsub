@@ -11,7 +11,7 @@ def CreateParser(desc, use, job):
 
     jobargs = parser.add_argument_group ("optional job arguments <Default Value if none given>")
     jobargs.add_argument ("--tag", action="store", dest="tag",      
-                          help="[ Unique ID Tag ]", metavar="<nuiscomp>",  required=False)
+                          help="[ Unique ID Tag ]", metavar="<" + job + ">",  required=False)
     
     jobargs.add_argument ("--input", action="append", dest="inp",      
                           help="[ Optional input files ]", metavar="<path to input>",  required=False)
