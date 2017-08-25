@@ -231,7 +231,7 @@ class NuisBayesJob:
         script.write("\n")
         script.write("# Check copy was okay \n")
         for infile in self.InputFiles:
-            script.write("if [ ! -e " + infile.split("/")[-1] + " ]; then exit 1; fi;\n" )
+            script.write("if [ ! -e " + infile.split("/")[-1] + " ]; then exit; fi;\n" )
         script.write("\n\n")
 
         # Run Job
@@ -242,7 +242,8 @@ class NuisBayesJob:
                    " -o " + self.OutputFile.replace(".root","") + "-$RUN.root" +
                    " >> " + self.LogFile.replace(".log","") + "-$RUN.log 2>&1 \n")
         script.write(command)
-        script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "$RUN.log " + self.OutputDir + " \n")
+        script.write("cat " + self.LogFile.replace(".log","") + "-$RUN.log \n")
+        script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "-$RUN.log " + self.OutputDir + " \n")
         script.write("\n\n")
 
         # Remove the input files instead of copying them back
