@@ -242,7 +242,7 @@ class NuisBayesJob:
                    " -o " + self.OutputFile.replace(".root","") + "-$RUN.root" +
                    " >> " + self.LogFile.replace(".log","") + "-$RUN.log 2>&1 \n")
         script.write(command)
-        script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "-$RUN.log " + self.OutputDir + " \n")
+        script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "$RUN.log " + self.OutputDir + " \n")
         script.write("\n\n")
 
         # Remove the input files instead of copying them back
