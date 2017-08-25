@@ -106,7 +106,7 @@ class NuisMinJob:
 
         self.SubPreAmble = "-G minerva -M --OS=SL6"
         self.SubResource = "DEDICATED"
-        self.SubLifeTime = "40h"
+        self.SubLifeTime = "2h"
         self.SubMemory   = "2000MB"
 
     def MakeScript(self):

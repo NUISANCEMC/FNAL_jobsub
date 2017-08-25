@@ -106,7 +106,7 @@ class NuisMinJob:
 
         self.SubPreAmble = "-G minerva -M --OS=SL6"
         self.SubResource = "DEDICATED"
-        self.SubLifeTime = "40h"
+        self.SubLifeTime = "2h"
         self.SubMemory   = "2000MB"
 
     def MakeScript(self):
@@ -134,8 +134,6 @@ class NuisMinJob:
         # Setup NUISANCE
         script.write("# Setup NUISANCE\n")
         script.write(self.NUISANCESetupScript + "\n")
-        script.write("source $GENIE/setup.sh \n")
-        script.write("source $NUWRO/setup.sh \n")
         script.write(self.IFDHCSetupScript + "\n")
 
 
