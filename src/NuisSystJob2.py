@@ -162,8 +162,9 @@ class NuisSystJob2:
         self.Arguments = (" -c " + self.CardFile +
                           " -o " + self.OutputFile)
 
-        for conf in self.Configs:
-            self.Arguments += " -q " + conf
+        if self.Configs:
+            for conf in self.Configs:
+                self.Arguments += " -q " + conf
         
         if (self.Routine):    self.Arguments += " -f " + self.Routine
         if (self.NEvents):    self.Arguments += " -n " + self.NEvents

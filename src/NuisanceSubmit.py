@@ -13,6 +13,7 @@ from GevGenJob import *
 from NuisCompJob2 import *
 from NuisMinJob2 import *
 from NuisSystJob2 import *
+from NuisBayesJob import *
 
 def GetArguments():
 
@@ -35,6 +36,7 @@ def GetArguments():
           print "nuisance_jobsub --job nuiscomp <arguments>"
           print "nuisance_jobsub --job nuismin <arguments>"
           print "nuisance_jobsub --job nuissyst <arguments>"
+          print "nuisance_jobsub --job nuisbayes <arguments>"
           print ""
           print "To see job specific arguments, run without arguments."
           print ""
@@ -67,4 +69,8 @@ if __name__=="__main__":
          job.MakeScript()
          job.MakeSubmissionScript()
          job.MakeFetchScript()
-    
+    elif args.job == "nuisbayes":
+         job = NuisBayesJob(args, other)
+         job.MakeScript()
+         job.MakeSubmissionScript()
+         job.MakeFetchScript()

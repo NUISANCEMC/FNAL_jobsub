@@ -11,7 +11,7 @@ from ArgumentParser import *
 def GetHash(s):
     return str(int(hashlib.sha256(s.encode('utf-8')).hexdigest(), 16) % 10**16)
 
-class NuisCompJob2:
+class NuisBayesJob:
 
     InputFiles  = []
     MetaData    = []
@@ -19,20 +19,26 @@ class NuisCompJob2:
     #________________________________________
     def GetArguments(self):
 
-        parser = CreateParser( "NUISANCE nuiscomp Handler @ FERMILAB",
-                               "nuisance_jobsub --job nuiscomp <options>",
-                               "nuiscomp" )
+        parser = CreateParser( "NUISANCE nuisbayes Handler @ FERMILAB",
+                               "nuisance_jobsub --job nuisbayes <options>",
+                               "nuisbayes" )
 
-        required=parser.add_argument_group ("required nuiscomp arguments")
+        required=parser.add_argument_group ("required nuisbayes arguments")
         required.add_argument ("-c", action="store",  dest="card",    help="[ Input Cardfile ]",  required=True)
         required.add_argument ("-o", action="store",  dest="out",     help="[ Output Filename ]", required=True)
 
-        optional=parser.add_argument_group ("optional nuiscomp arguments")
+        optional=parser.add_argument_group ("optional nuisbayes arguments")
         optional.add_argument ("-q", action="append", dest="config",  help="[ Config override ]", required=False)
         optional.add_argument ("-f", action="store",  dest="routine", help="[ Routines override ]", required=False)
         optional.add_argument ("-n", action="store",  dest="nevents", help="[ NEvents Override ]", required=False)
         optional.add_argument ("-d", action="store",  dest="fakedt",  help="[ Fake Data Option ]", required=False)
+        optional.add_argument ("-s", action="store",  dest="startthrow",  help="[ Start Throw (INT) ]", required=False)
+        optional.add_argument ("-t", action="store",  dest="nthrows",  help="[ N Throws (INT) ]", required=False)
+        optional.add_argument ("-p", action="store",  dest="throwstr",  help="[ Throw String ]", required=False)
 
+        optional.add_argument ("--multiple", action="store", dest="multiple", help="[ Submits N multiple tunes ]", required = False)
+
+        
         try:
             options=parser.parse_args()
 
@@ -69,6 +75,11 @@ class NuisCompJob2:
         self.Routine  = args.routine
         self.NEvents  = args.nevents
         self.FakeData = args.fakedt
+        self.StartThrow = args.startthrow
+        self.NThrows = args.nthrows
+        self.ThrowString = args.throwstr
+
+        self.Multiple = int(args.multiple);
 
         # Read setup paths
         self.NUISANCESetupScript = os.environ["NUISANCE_CVMFS_SETUP"]
@@ -152,18 +163,21 @@ class NuisCompJob2:
             for inps in args.inp:
                 self.InputFiles.append(inps)
 
-        # Setup the main arguments for gevgen
-        self.Arguments = (" -c " + self.CardFile +
-                          " -o " + self.OutputFile)
-        
+        # Setup the main arguments for nuisbayes
+        self.Arguments = (" -c " + self.CardFile)
+                 
         if self.Configs:
             for conf in self.Configs:
                 self.Arguments += " -q " + conf
-
+        
         if (self.Routine):    self.Arguments += " -f " + self.Routine
         if (self.NEvents):    self.Arguments += " -n " + self.NEvents
         if (self.FakeData):   self.Arguments += " -d " + self.FakeData
-
+        
+        if (self.StartThrow):  self.Arguments += " -s " + self.StartThrow
+        if (self.NThrows):     self.Arguments += " -t " + self.NThrows
+        if (self.ThrowString): self.Arguments += " -p " + self.ThrowString
+        
         # Setup Scripts
         self.ScriptFile  = self.CardFile.replace(".xml","") + self.UID + ".sh"
         self.ScriptPath  = self.CurDir + "/" + self.ScriptFile
@@ -223,8 +237,12 @@ class NuisCompJob2:
         # Run Job
         script.write("# Run Job\n")
         script.write("echo 'Starting nuisance job!' > " + self.LogFile + " \n")
-        script.write("nuiscomp " + self.Arguments + " >> " + self.LogFile + " 2>&1 \n")
-        script.write("ifdh cp -D " + self.LogFile + " " + self.OutputDir + " \n")
+        script.write("RUN=$1 \n")
+        command = ("nuissyst " + self.Arguments + 
+                   " -o " + self.OutputFile.replace(".root","") + "-$RUN.root" +
+                   " >> " + self.LogFile.replace(".log","") + "-$RUN.log 2>&1 \n")
+        script.write(command)
+        script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "$RUN.log " + self.OutputDir + " \n")
         script.write("\n\n")
 
         # Remove the input files instead of copying them back
@@ -265,7 +283,8 @@ class NuisCompJob2:
         f.write(os.environ['NUISANCE_JOBSUB_SETUP'] + "\n")
         f.write("rm -vf " + self.OutputDir + "/" + self.CardFile + " \n")
         f.write("ifdh cp -D " + self.CardPath + " " + self.OutputDir + " \n")
-        f.write(com)
+        for i in range(self.Multiple):
+            f.write(com + " " + str(i) + "\n")
         f.close()
 
         # If auto submit run it
