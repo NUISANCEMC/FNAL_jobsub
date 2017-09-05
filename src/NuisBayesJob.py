@@ -244,6 +244,7 @@ class NuisBayesJob:
         script.write(command)
         script.write("cat " + self.LogFile.replace(".log","") + "-$RUN.log \n")
         script.write("ifdh cp -D " + self.LogFile.replace(".log","") + "-$RUN.log " + self.OutputDir + " \n")
+        script.write("rm -v " + self.LogFile.replace(".log","") + "-$RUN.log \n") 
         script.write("\n\n")
 
         # Remove the input files instead of copying them back
@@ -257,8 +258,8 @@ class NuisBayesJob:
         script.write("outdir=" + self.OutputDir + "\n")
         script.write("for ofile in ./* \n")
         script.write("do\n")
-        script.write("echo $ofile \n")
-        script.write("  ifdh cp -D  $ofile $outdir/$ofile \n") 
+        script.write("  echo COPYING $ofile $outdir \n")
+        script.write("  ifdh cp -D  $ofile $outdir/ \n") 
         script.write("done\n")
 
         
